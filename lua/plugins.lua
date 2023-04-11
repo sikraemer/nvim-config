@@ -4,13 +4,16 @@ require('packer').startup(function()
   use { 'ray-x/lsp_signature.nvim' }
   use { 'nvim-lualine/lualine.nvim',
     requires = {
-      'kyazdani42/nvim-web-devicons',
+      'nvim-tree/nvim-web-devicons',
       'arkav/lualine-lsp-progress',
       opt = true
     }
   }
-  use { 'kyazdani42/nvim-tree.lua',
-    requires = { 'kyazdani42/nvim-web-devicons' }
+  use {'akinsho/bufferline.nvim', tag = "v3.*",
+    requires = {'nvim-tree/nvim-web-devicons'}
+  }
+  use { 'nvim-tree/nvim-tree.lua',
+    requires = { 'nvim-tree/nvim-web-devicons' }
   }
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use { 'hrsh7th/nvim-cmp',
@@ -48,6 +51,7 @@ require('plugins/nvim-config-local')
 
 require('plugins/nvim-tree')
 require('plugins/nvim-lualine')
+require('plugins/bufferline')
 
 require('plugins/nvim-lspconfig')
 require('plugins/nvim-treesitter')

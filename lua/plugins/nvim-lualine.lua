@@ -24,30 +24,5 @@ require('lualine').setup({
     lualine_y = {},
     lualine_z = {}
   },
-  tabline = {
-    lualine_a = {
-      {
-        'buffers',
-         show_filename_only = false,
-         hide_filename_extension = false,
-         show_modified_status = true,
-         mode = 2,
-         max_length = vim.o.columns * 2 / 3,
-         filetype_names = {
-           NvimTree = 'NvimTree',
-           packer = 'Packer',
-         },
-         symbols = {
-           modified = ' ●',
-           alternate_file = '',
-           directory =  '',
-         },
-         buffers_color = {
-           active = { bg = "white", fg = "black" },
-           inactive = { bg = "black", fg = "white" },
-         }
-      }
-    }
-  },
   extensions = {}
 })

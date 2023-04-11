@@ -1,23 +1,28 @@
 local telescope_builtin = require('telescope.builtin')
+local bufferline_state = require('bufferline.state')
+local bufferline_commands = require('bufferline.commands')
 
 -------------------------------------------------------------------------------
 -- Buffer Navigation
 function SelectNextBuffer()
-  vim.cmd([[bn]])
+  bufferline_commands.cycle(1)
 end
 vim.api.nvim_create_user_command('SelectNextBuffer', SelectNextBuffer, {})
 
 function SelectPrevBuffer()
-  vim.cmd([[bp]])
+  bufferline_commands.cycle(-1)
 end
 vim.api.nvim_create_user_command('SelectPrevBuffer', SelectPrevBuffer, {})
 
 function CloseCurrentBuffer()
-  if pcall(function ()
-    vim.cmd([[bp|bd #]]) -- select previous - then delete last
-  end) then else
-    vim.cmd([[bd]]) -- delete last buffer directly
+  local win_id = vim.api.nvim_get_current_buf()
+  local win_index = bufferline_commands.get_current_element_index(bufferline_state)
+  if win_index == 1 then
+    SelectNextBuffer()
+  else
+    SelectPrevBuffer()
   end
+  bufferline_commands.unpin_and_close(win_id)
 end
 vim.api.nvim_create_user_command('CloseCurrentBuffer', CloseCurrentBuffer, {})
 

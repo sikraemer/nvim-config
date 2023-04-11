@@ -1,5 +1,3 @@
-local g = vim.g
-
 require('nvim-tree').setup {
   disable_netrw = false,
   git = { enable = true, ignore = true },
