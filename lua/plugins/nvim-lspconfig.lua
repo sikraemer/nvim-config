@@ -96,13 +96,14 @@ nvim_lsp["java_language_server"].setup {
 -- python
 nvim_lsp["pyright"].setup {
   before_init = function(_, config)
-    config.settings.python.pythonPath = os.capture('pyenv which python', false)
-    vim.env.PYTHONPATH=os.capture("find . -name 'setup.py' -exec bash -c \"realpath \\$(dirname {})\" \\; | tr '\n' ':' | head -c -1")
+    if vim.fn.executable('pyenv') == 1 then
+      config.settings.python.pythonPath = os.capture('pyenv which python', false)
+    end
   end,
   capabilities = capabilities,
   on_attach = on_attach,
   flags = { debounce_text_changes = 150 },
-  root_dir = nvim_lsp.util.root_pattern('.python-version', '.git')
+  root_dir = nvim_lsp.util.root_pattern('.python-version', '.git', 'lib')
 }
 
 -- rest
