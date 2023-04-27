@@ -14,11 +14,11 @@ cmp.setup({
   mapping = {
     ['<Up>'] = cmp.mapping.select_prev_item(),
     ['<Down>'] = cmp.mapping.select_next_item(),
-    ['<C-Up>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-Down>'] = cmp.mapping.scroll_docs(4),
+    ['<PageUp>'] = cmp.mapping.scroll_docs(-10),
+    ['<PageDown>'] = cmp.mapping.scroll_docs(10),
     ['<C-Space>'] = cmp.mapping.complete(),
     [''] = cmp.mapping.close(),
-    ['<CR>'] = cmp.mapping.confirm({behavior = cmp.ConfirmBehavior.Replace, select = true }),
+    ['<CR>'] = cmp.mapping.confirm({behavior = cmp.ConfirmBehavior.Replace, select = false }),
     ['<Tab>'] = function(fallback)
       if cmp.visible() then
         cmp.select_next_item()

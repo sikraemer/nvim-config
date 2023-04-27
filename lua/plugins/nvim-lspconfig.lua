@@ -1,44 +1,37 @@
 local nvim_lsp = require('lspconfig')
 local nvim_lsp_sig = require('lsp_signature')
+local functions = require('../functions')
 
-if(not vim.g.lsp_cmake_builddir) then
-  vim.g.lsp_cmake_builddir = "build"
-end
+local M = {}
 
--- nvim-cmp capabilities
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.documentationFormat = { 'markdown', 'plaintext' }
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-capabilities.textDocument.completion.completionItem.preselectSupport = true
-capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
-capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
-capabilities.textDocument.completion.completionItem.deprecatedSupport = true
-capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
-capabilities.textDocument.completion.completionItem.tagSupport = { valueSet = { 1 } }
-capabilities.textDocument.completion.completionItem.resolveSupport = { properties = { 'documentation', 'detail', 'additionalTextEdits' } }
+-------------------------------------------------------------------------------
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(_, bufnr)
+M.capabilities = vim.lsp.protocol.make_client_capabilities()
+M.capabilities.textDocument.completion.completionItem = {
+  documentationFormat = { 'markdown', 'plaintext' },
+  snippetSupport = true,
+  preselectSupport = true,
+  insertReplaceSupport = true,
+  labelDetailsSupport = true,
+  deprecatedSupport = true,
+  commitCharactersSupport = true,
+  tagSupport = { valueSet = { 1 } },
+  resolveSupport = { properties = { 'documentation', 'detail', 'additionalTextEdits' } },
+}
+
+M.on_attach = function(_, bufnr)
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
   -- Enable completion triggered by <c-x><c-o>
   buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
   nvim_lsp_sig.on_attach()
 end
 
-function os.capture(cmd, raw)
-  local f = assert(io.popen(cmd, 'r'))
-  local s = assert(f:read('*a'))
-  f:close()
-  if raw then return s end
-  s = string.gsub(s, '^%s+', '')
-  s = string.gsub(s, '%s+$', '')
-  s = string.gsub(s, '[\n\r]+', ' ')
-  return s
-end
+-------------------------------------------------------------------------------
 
--- clangd
-nvim_lsp["clangd"].setup {
+M.language_servers = {}
+
+-- c++ clangd
+M.language_servers.clangd = {
   cmd = {
     "clangd",
     "--background-index",
@@ -47,14 +40,14 @@ nvim_lsp["clangd"].setup {
     "--completion-style=bundled",
     "--header-insertion=iwyu"
   },
-  capabilities = capabilities,
-  on_attach = on_attach,
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
   flags = {debounce_text_changes = 150},
   root_dir = nvim_lsp.util.find_git_ancestor
 }
 
 -- lua
-nvim_lsp["lua_ls"].setup {
+M.language_servers.lua_ls = {
   settings = {
       Lua = {
           diagnostics = {globals = {"vim", "use", "packer_plugins"}},
@@ -62,57 +55,148 @@ nvim_lsp["lua_ls"].setup {
           workspace = {library = vim.api.nvim_get_runtime_file('', true)}
       }
   },
-  capabilities = capabilities,
-  on_attach = on_attach,
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
   flags = {debounce_text_changes = 150}
 }
 
 -- cmake
-nvim_lsp["cmake"].setup {
+M.language_servers.cmake = {
   init_options = { buildDirectory = "Build/Host-Debug" },
-  capabilities = capabilities,
-  on_attach = on_attach,
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
   flags = {debounce_text_changes = 150},
   root_dir = nvim_lsp.util.find_git_ancestor
 }
 
 -- groovy
-nvim_lsp["groovyls"].setup {
+M.language_servers.groovyls = {
   cmd = { "java", "-jar" , "/usr/share/java/groovy-language-server/groovy-language-server-all.jar" },
   filetypes = { "groovy", "java"},
-  capabilities = capabilities,
-  on_attach = on_attach,
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
   flags = {debounce_text_changes = 150},
 }
 
 -- java
-nvim_lsp["java_language_server"].setup {
+M.language_servers.java_language_server = {
   cmd = { "/usr/share/java/java-language-server/lang_server_linux.sh" },
-  capabilities = capabilities,
-  on_attach = on_attach,
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 }
 }
 
--- python
-nvim_lsp["pyright"].setup {
+-- python pyright
+M.language_servers.pyright = {
   before_init = function(_, config)
     if vim.fn.executable('pyenv') == 1 then
-      config.settings.python.pythonPath = os.capture('pyenv which python', false)
+      config.settings.python.pythonPath = functions.os.capture('pyenv which python', false)
     end
   end,
-  capabilities = capabilities,
-  on_attach = on_attach,
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
-  root_dir = nvim_lsp.util.root_pattern('.python-version', '.git', 'lib')
+  root_dir = nvim_lsp.util.root_pattern('.python-version', '.git')
 }
 
--- rest
-for _, server in pairs({ 'bashls', 'vimls', 'dockerls'}) do
-  nvim_lsp[server].setup {
-    capabilities = capabilities,
-    on_attach = on_attach,
-    flags = { debounce_text_changes = 150 },
-    root_dir = nvim_lsp.util.find_git_ancestor
+-- bashls
+M.language_servers.bashls = {
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
+  flags = { debounce_text_changes = 150 },
+  root_dir = nvim_lsp.util.find_git_ancestor
+}
+
+-- vimls
+M.language_servers.vimls = {
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
+  flags = { debounce_text_changes = 150 },
+  root_dir = nvim_lsp.util.find_git_ancestor
+}
+
+-- dockerls
+M.language_servers.dockerls = {
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
+  flags = { debounce_text_changes = 150 },
+  root_dir = nvim_lsp.util.find_git_ancestor
+}
+
+-- efm (multi-language-support)
+--  - python pylint
+--  - python mypy
+--  - python yapf
+--  - python isort
+--  - 
+M.language_servers.efm = {
+  capabilities = M.capabilities,
+  on_attach = M.on_attach,
+  flags = { debounce_text_changes = 150 },
+  root_dir = nvim_lsp.util.find_git_ancestor,
+  filetypes = {
+    'python',
+  },
+  settings = {
+    languages = {
+      python = {
+        -- pylint
+        {
+          lintCommand = 'pylint --output-format text --score no --msg-template {path}={line}={column}={C}={msg} ${INPUT}',
+          lintIgnoreExitCode = true,
+          lintStdin = false,
+          lintFormats = {
+            '%f=%l=%c=%t=%m'
+          },
+          lintOffsetColumns = 1,
+          lintCategoryMap = {
+            I = 'H',
+            R = 'I',
+            C = 'I',
+            W = 'W',
+            E = 'E',
+            F = 'E',
+          }
+        },
+        -- mypy
+        {
+          lintCommand = 'mypy --show-column-numbers',
+          lintIgnoreExitCode = true,
+          lintFormats = {
+            '%f=%l=%c= %trror= %m',
+            '%f=%l=%c= %tarning= %m',
+            '%f=%l=%c= %tote= %m'
+          }
+        },
+        -- isort
+        {
+          formatCommand = 'isort --quiet -',
+          formatStdin = true
+        },
+        -- yapf
+        {
+          formatCommand = 'yapf --quiet',
+          formatStdin = true
+        }
+      }
+    }
   }
+}
+
+
+-------------------------------------------------------------------------------
+
+M.setup = function()
+    if(not vim.g.lsp_cmake_builddir) then
+        vim.g.lsp_cmake_builddir = "build"
+    end
+
+    for language_server, language_server_config in pairs(M.language_servers) do
+      if language_server ~= nil and language_server_config ~= nil then
+        nvim_lsp[language_server].setup(language_server_config)
+      end
+    end
 end
+
+return M
 

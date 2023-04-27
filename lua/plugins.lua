@@ -1,8 +1,11 @@
 require('packer').startup(function()
   use { 'wbthomason/packer.nvim' }
-  use { 'neovim/nvim-lspconfig' }
+  use { 'neovim/nvim-lspconfig',
+    requires = {
+      'ray-x/lsp_signature.nvim'
+    }
+  }
   use { 'jose-elias-alvarez/null-ls.nvim' }
-  use { 'ray-x/lsp_signature.nvim' }
   use { 'nvim-lualine/lualine.nvim',
     requires = {
       'nvim-tree/nvim-web-devicons',
@@ -54,8 +57,7 @@ require('plugins/nvim-tree')
 require('plugins/nvim-lualine')
 require('plugins/bufferline')
 
-require('plugins/nvim-null-ls')
-require('plugins/nvim-lspconfig')
+require('plugins/nvim-lspconfig').setup()
 require('plugins/nvim-treesitter')
 
 require('plugins/vim-clang-format')
