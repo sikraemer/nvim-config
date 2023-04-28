@@ -29,22 +29,22 @@ M.language_servers.clangd = {
   },
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
-  flags = {debounce_text_changes = 150},
+  flags = { debounce_text_changes = 150 },
   root_dir = nvim_lsp.util.find_git_ancestor
 }
 
 -- lua
 M.language_servers.lua_ls = {
   settings = {
-      Lua = {
-          diagnostics = {globals = {"vim", "use", "packer_plugins"}},
-          telemetry = {enable = false},
-          workspace = {library = vim.api.nvim_get_runtime_file('', true)}
-      }
+    Lua = {
+      diagnostics = { globals = { "vim", "use", "packer_plugins" } },
+      telemetry = { enable = false },
+      workspace = { library = vim.api.nvim_get_runtime_file('', true) }
+    }
   },
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
-  flags = {debounce_text_changes = 150}
+  flags = { debounce_text_changes = 150 }
 }
 
 -- cmake
@@ -52,17 +52,17 @@ M.language_servers.cmake = {
   init_options = { buildDirectory = "Build/Host-Debug" },
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
-  flags = {debounce_text_changes = 150},
+  flags = { debounce_text_changes = 150 },
   root_dir = nvim_lsp.util.find_git_ancestor
 }
 
 -- groovy
 M.language_servers.groovyls = {
-  cmd = { "java", "-jar" , "/usr/share/java/groovy-language-server/groovy-language-server-all.jar" },
-  filetypes = { "groovy", "java"},
+  cmd = { "java", "-jar", "/usr/share/java/groovy-language-server/groovy-language-server-all.jar" },
+  filetypes = { "groovy", "java" },
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
-  flags = {debounce_text_changes = 150},
+  flags = { debounce_text_changes = 150 },
 }
 
 -- java
@@ -120,7 +120,7 @@ M.language_servers.pylint = {
   filetypes = { 'python' },
   settings = {
     languages = {
-      python = {{
+      python = { {
         lintCommand = 'pylint --output-format text --score no --msg-template {path}={line}={column}={C}={msg} ${INPUT}',
         lintIgnoreExitCode = true,
         lintStdin = false,
@@ -135,8 +135,8 @@ M.language_servers.pylint = {
           W = 'W',
           E = 'E',
           F = 'E',
-        }}
-      }
+        }
+      } }
     }
   }
 }
@@ -151,15 +151,15 @@ M.language_servers.mypy = {
   filetypes = { 'python' },
   settings = {
     languages = {
-      python = {{
+      python = { {
         lintCommand = 'mypy --show-column-numbers',
         lintIgnoreExitCode = true,
         lintFormats = {
           '%f=%l=%c= %trror= %m',
           '%f=%l=%c= %tarning= %m',
           '%f=%l=%c= %tote= %m'
-        }}
-      }
+        }
+      } }
     }
   }
 }
@@ -170,13 +170,14 @@ M.language_servers.isort = {
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
   root_dir = nvim_lsp.util.find_git_ancestor,
+  init_options = { documentFormatting = true },
   filetypes = { 'python' },
   settings = {
     languages = {
-      python = {{
+      python = { {
         formatCommand = 'isort --quiet -',
         formatStdin = true
-      }}
+      } }
     }
   }
 }
@@ -187,13 +188,14 @@ M.language_servers.yapf = {
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
   root_dir = nvim_lsp.util.find_git_ancestor,
+  init_options = { documentFormatting = true },
   filetypes = { 'python' },
   settings = {
     languages = {
-      python = {{
+      python = { {
         formatCommand = 'yapf --quiet',
         formatStdin = true
-      }}
+      } }
     }
   }
 }
@@ -201,14 +203,15 @@ M.language_servers.yapf = {
 -------------------------------------------------------------------------------
 
 M.setup = function()
-  if(not vim.g.lsp_cmake_builddir) then
+  if (not vim.g.lsp_cmake_builddir) then
     vim.g.lsp_cmake_builddir = "build"
   end
 
   for language_server, language_server_config in pairs(M.language_servers) do
     if language_server ~= nil and language_server_config ~= nil then
       if language_server_config.inherits ~= nil and nvim_lsp_configs[language_server] == nil then
-        nvim_lsp_configs[language_server] = require('lspconfig.server_configurations.' .. language_server_config.inherits)
+        local base_config_modname = 'lspconfig.server_configurations.' .. language_server_config.inherits
+        nvim_lsp_configs[language_server] = require(base_config_modname)
       end
       nvim_lsp[language_server].setup(language_server_config)
     end
@@ -218,4 +221,3 @@ end
 nvim_lsp.pyright.setup({})
 
 return M
-
