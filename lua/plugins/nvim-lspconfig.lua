@@ -22,7 +22,6 @@ M.language_servers.clangd = {
   cmd = {
     "clangd",
     "--background-index",
-    "--suggest-missing-includes",
     "--clang-tidy",
     "--completion-style=bundled",
     "--header-insertion=iwyu"
@@ -200,6 +199,33 @@ M.language_servers.yapf = {
   }
 }
 
+M.language_servers.clang_format = {
+  inherits = "efm",
+  capabilities = M.default_capabilities,
+  on_attach = M.on_attach,
+  flags = { debounce_text_changes = 150 },
+  root_dir = nvim_lsp.util.find_git_ancestor,
+  offset_encoding = 'utf-8',
+  init_options = { documentFormatting = true },
+  filetypes = { 'c', 'cpp', 'proto' },
+  settings = {
+    languages = {
+      c = { {
+        formatCommand = 'clang-format --style=file --fallback-style=none',
+        formatStdin = true
+      } },
+      cpp = { {
+        formatCommand = 'clang-format --style=file --fallback-style=none',
+        formatStdin = true
+      } },
+      proto = { {
+        formatCommand = 'clang-format --style=file --fallback-style=none',
+        formatStdin = true
+      } }
+    }
+  }
+}
+
 -------------------------------------------------------------------------------
 
 M.setup = function()
@@ -207,14 +233,14 @@ M.setup = function()
     vim.g.lsp_cmake_builddir = "build"
   end
 
-  for language_server, language_server_config in pairs(M.language_servers) do
-    if language_server ~= nil and language_server_config ~= nil then
-      if language_server_config.inherits ~= nil and nvim_lsp_configs[language_server] == nil then
-        local base_config_modname = 'lspconfig.server_configurations.' .. language_server_config.inherits
-        nvim_lsp_configs[language_server] = require(base_config_modname)
-      end
-      nvim_lsp[language_server].setup(language_server_config)
+  vim.lsp.stop_client(vim.lsp.get_active_clients(), true)
+  local language_server_name = "clang_format"
+  for language_server_name, language_server_config in pairs(M.language_servers) do
+    if language_server_config.inherits ~= nil and nvim_lsp_configs[language_server_name] == nil then
+      local base_config_modname = 'lspconfig.server_configurations.' .. language_server_config.inherits
+      nvim_lsp_configs[language_server_name] = require(base_config_modname)
     end
+    nvim_lsp[language_server_name].setup(language_server_config)
   end
 end
 

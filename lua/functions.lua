@@ -14,14 +14,27 @@ M.os.capture = function(cmd, raw)
   return s
 end
 
+M.string = {}
+M.string.concat = fun
+
 M.table = {}
 -- Removes (and returns) a table element by its key,
 -- moving down other elements to close space and
 -- decrementing the size of the array
 M.table.remove_key = function(table, key)
-    local element = table[key]
-    table[key] = nil
-    return element
+  local element = table[key]
+  table[key] = nil
+  return element
+end
+
+M.list = {}
+M.list.contains_value = function(list, value)
+  for _, v in pairs(list) do
+    if v == value then
+      return true
+    end
+  end
+  return false
 end
 
 return M
