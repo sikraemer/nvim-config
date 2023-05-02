@@ -5,7 +5,6 @@ require('packer').startup(function()
       'ray-x/lsp_signature.nvim'
     }
   }
-  use { 'jose-elias-alvarez/null-ls.nvim' }
   use { 'nvim-lualine/lualine.nvim',
     requires = {
       'nvim-tree/nvim-web-devicons',
@@ -30,7 +29,6 @@ require('packer').startup(function()
   }
   use { 'hrsh7th/vim-vsnip' }
   use { 'airblade/vim-gitgutter' }
-  use { 'rhysd/vim-clang-format' }
   use { 'folke/tokyonight.nvim' }
   use { 'ahmedkhalf/project.nvim' }
   use { 'linty-org/key-menu.nvim' }
@@ -40,10 +38,6 @@ require('packer').startup(function()
   use {
     'nvim-telescope/telescope.nvim', branch = '0.1.x',
     requires = {'nvim-lua/plenary.nvim'}
-  }
-  use {
-    "danymat/neogen", tag = "*",
-    requires = {"nvim-treesitter/nvim-treesitter"},
   }
 end)
 
@@ -57,14 +51,18 @@ require('plugins/nvim-tree')
 require('plugins/nvim-lualine')
 require('plugins/bufferline')
 
-require('plugins/nvim-lspconfig').setup()
 require('plugins/nvim-treesitter')
-
-require('plugins/vim-clang-format')
 require('plugins/vim-gitgutter')
-require('plugins/neogen')
 
-require('plugins/nvim-telescope')
 require('plugins/nvim-lsp-signature')
 require('plugins/nvim-cmp')
+
+require('plugins/nvim-telescope')
+
+-- Initialize the following after the project local config was loaded
+vim.api.nvim_create_autocmd({"User"}, {pattern = {"ConfigFinished"}, callback = function(_)
+  require('plugins/nvim-lspconfig').setup()
+  vim.cmd[[e]]
+end})
+
 
