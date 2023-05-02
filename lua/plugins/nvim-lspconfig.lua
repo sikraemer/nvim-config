@@ -234,7 +234,6 @@ M.setup = function()
   end
 
   vim.lsp.stop_client(vim.lsp.get_active_clients(), true)
-  local language_server_name = "clang_format"
   for language_server_name, language_server_config in pairs(M.language_servers) do
     if language_server_config.inherits ~= nil and nvim_lsp_configs[language_server_name] == nil then
       local base_config_modname = 'lspconfig.server_configurations.' .. language_server_config.inherits
@@ -243,7 +242,5 @@ M.setup = function()
     nvim_lsp[language_server_name].setup(language_server_config)
   end
 end
-
-nvim_lsp.pyright.setup({})
 
 return M
