@@ -27,6 +27,14 @@ M.table.remove_key = function(table, key)
   return element
 end
 
+M.table.append_field = function(table, key, value)
+  table[key] = table[key] .. value
+end
+
+M.table.prepend_field = function(table, key, value)
+  table[key] = value .. table[key]
+end
+
 M.list = {}
 M.list.contains_value = function(list, value)
   for _, v in pairs(list) do
