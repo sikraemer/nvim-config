@@ -7,11 +7,14 @@ local M = {}
 
 -------------------------------------------------------------------------------
 
-M.default_capabilities = vim.lsp.protocol.make_client_capabilities()
+M.default_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-M.on_attach = function(config, bufnr)
-  nvim_lsp_sig.on_attach(config, bufnr)
+M.on_attach = function(_, bufnr)
+  nvim_lsp_sig.on_attach({}, bufnr)
 end
+
+
+M.default_python_root_dir = nvim_lsp.util.root_pattern('.python-version', '.git')
 
 -------------------------------------------------------------------------------
 
@@ -48,7 +51,6 @@ M.language_servers.lua_ls = {
 
 -- cmake
 M.language_servers.cmake = {
-  init_options = { buildDirectory = "Build/Host-Debug" },
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
@@ -82,7 +84,7 @@ M.language_servers.pyright = {
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
-  root_dir = nvim_lsp.util.root_pattern('.python-version', '.git')
+  root_dir = M.default_python_root_dir
 }
 
 -- bashls
@@ -115,7 +117,7 @@ M.language_servers.pylint = {
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
-  root_dir = nvim_lsp.util.find_git_ancestor,
+  root_dir = M.default_python_root_dir,
   filetypes = { 'python' },
   settings = {
     languages = {
@@ -146,7 +148,7 @@ M.language_servers.mypy = {
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
-  root_dir = nvim_lsp.util.find_git_ancestor,
+  root_dir = M.default_python_root_dir,
   filetypes = { 'python' },
   settings = {
     languages = {
@@ -168,7 +170,7 @@ M.language_servers.isort = {
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
-  root_dir = nvim_lsp.util.find_git_ancestor,
+  root_dir = M.default_python_root_dir,
   init_options = { documentFormatting = true },
   filetypes = { 'python' },
   settings = {
@@ -186,7 +188,7 @@ M.language_servers.yapf = {
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },
-  root_dir = nvim_lsp.util.find_git_ancestor,
+  root_dir = M.default_python_root_dir,
   init_options = { documentFormatting = true },
   filetypes = { 'python' },
   settings = {
@@ -235,12 +237,14 @@ M.setup = function()
 
   vim.lsp.stop_client(vim.lsp.get_active_clients(), true)
   for language_server_name, language_server_config in pairs(M.language_servers) do
+    if language_server_config == nil then goto continue end
     if language_server_config.inherits ~= nil and nvim_lsp_configs[language_server_name] == nil then
       local base_config_modname = 'lspconfig.server_configurations.' .. language_server_config.inherits
       nvim_lsp_configs[language_server_name] = require(base_config_modname)
     end
     nvim_lsp[language_server_name].setup(language_server_config)
   end
+  ::continue::
 end
 
 return M

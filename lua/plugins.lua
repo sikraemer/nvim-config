@@ -2,7 +2,8 @@ require('packer').startup(function()
   use { 'wbthomason/packer.nvim' }
   use { 'neovim/nvim-lspconfig',
     requires = {
-      'ray-x/lsp_signature.nvim'
+      'ray-x/lsp_signature.nvim',
+      'hrsh7th/nvim-cmp'
     }
   }
   use { 'nvim-lualine/lualine.nvim',
@@ -21,10 +22,11 @@ require('packer').startup(function()
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use { 'hrsh7th/nvim-cmp',
     requires = {
-      'L3MON4D3/LuaSnip' ,
       'hrsh7th/cmp-nvim-lsp' ,
       'hrsh7th/cmp-buffer' ,
-      'hrsh7th/cmp-path'
+      'hrsh7th/cmp-path',
+      'onsails/lspkind.nvim',
+      'L3MON4D3/LuaSnip'
     }
   }
   use { 'hrsh7th/vim-vsnip' }
@@ -34,7 +36,8 @@ require('packer').startup(function()
   use { 'linty-org/key-menu.nvim' }
   use { 'norcalli/nvim-colorizer.lua' }
   use { 'junegunn/vim-easy-align' }
-  use { 'klen/nvim-config-local' }
+  use { 'klen/nvim-config-local', tag = "1.*" }
+  use { 'rcarriga/nvim-notify' }
   use {
     'nvim-telescope/telescope.nvim', branch = '0.1.x',
     requires = {'nvim-lua/plenary.nvim'}
@@ -43,6 +46,7 @@ end)
 
 require('plugins/nvim-tokyonight')
 require('plugins/nvim-colorizer')
+require('plugins/nvim-notify')
 
 require('plugins/nvim-project')
 require('plugins/nvim-config-local')
@@ -62,7 +66,6 @@ require('plugins/nvim-telescope')
 -- Initialize the following after the project local config was loaded
 vim.api.nvim_create_autocmd({"User"}, {pattern = {"ConfigFinished"}, callback = function(_)
   require('plugins/nvim-lspconfig').setup()
-  vim.cmd[[e]]
 end})
 
 
