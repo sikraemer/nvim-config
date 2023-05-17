@@ -39,6 +39,9 @@ require('packer').startup(function()
   use { 'klen/nvim-config-local', tag = "1.*" }
   use { 'rcarriga/nvim-notify' }
   use {
+    'mrded/nvim-lsp-notify',
+    requires = { 'rcarriga/nvim-notify' }, }
+  use {
     'nvim-telescope/telescope.nvim', branch = '0.1.x',
     requires = {'nvim-lua/plenary.nvim'}
   }
@@ -46,7 +49,9 @@ end)
 
 require('plugins/nvim-tokyonight')
 require('plugins/nvim-colorizer')
+
 require('plugins/nvim-notify')
+require('plugins/nvim-lsp-notify')
 
 require('plugins/nvim-project')
 require('plugins/nvim-config-local')
