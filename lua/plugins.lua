@@ -66,6 +66,7 @@ require('plugins/nvim-telescope')
 -- Initialize the following after the project local config was loaded
 vim.api.nvim_create_autocmd({"User"}, {pattern = {"ConfigFinished"}, callback = function(_)
   require('plugins/nvim-lspconfig').setup()
+  pcall(function() vim.cmd[[e]] end)
 end})
 
 
