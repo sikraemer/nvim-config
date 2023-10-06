@@ -11,6 +11,6 @@ require('nvim-tree').setup {
   respect_buf_cwd = true,
   update_cwd = true,
   update_focused_file = { enable = true, update_cwd = true },
-  view = { adaptive_size = true },
+  view = { side = 'right', width = 50 },
 }
 

@@ -4,7 +4,7 @@ local opt = vim.opt_local
 
 -- FileTypes
 ---- code files
-api.nvim_create_autocmd({"FileType"}, {pattern = {"c", "cpp", "lua", "javascript", "groovy"}, callback = function(_)
+api.nvim_create_autocmd({"FileType"}, {pattern = {"c", "cpp", "lua"}, callback = function(_)
   opt.colorcolumn="150"
   opt.expandtab=true
   opt.shiftwidth=2
@@ -12,7 +12,7 @@ api.nvim_create_autocmd({"FileType"}, {pattern = {"c", "cpp", "lua", "javascript
 end})
 
 ---- cucumber files
-api.nvim_create_autocmd({"FileType"}, {pattern = {"cucumber"}, callback = function(_)
+api.nvim_create_autocmd({"FileType"}, {pattern = {"cucumber", "javascript", "groovy"}, callback = function(_)
   opt.colorcolumn="150"
   opt.expandtab=true
   opt.shiftwidth=4
