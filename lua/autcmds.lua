@@ -2,6 +2,11 @@ local api = vim.api
 local cmd = vim.cmd
 local opt = vim.opt_local
 
+-- OnOpen/OnRead
+api.nvim_create_autocmd({"BufRead","BufNewFile"}, {pattern = {"*/.ssh/config.d/*"}, callback = function(_)
+  vim.bo.filetype='sshconfig'
+end})
+
 -- FileTypes
 ---- code files
 api.nvim_create_autocmd({"FileType"}, {pattern = {"c", "cpp", "lua"}, callback = function(_)

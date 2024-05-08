@@ -15,7 +15,9 @@ M.os.capture = function(cmd, raw)
 end
 
 M.string = {}
-M.string.concat = fun
+M.string.concat = function(str1, str2)
+  str1 = str1 .. str2
+end
 
 M.table = {}
 -- Removes (and returns) a table element by its key,

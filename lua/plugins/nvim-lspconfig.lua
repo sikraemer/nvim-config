@@ -61,6 +61,7 @@ M.language_servers.cmake = {
 M.language_servers.groovyls = {
   cmd = { "java", "-jar", "/usr/share/java/groovy-language-server/groovy-language-server-all.jar" },
   filetypes = { "groovy", "java" },
+  settings = { groovy = { classpath = {} } },
   capabilities = M.default_capabilities,
   on_attach = M.on_attach,
   flags = { debounce_text_changes = 150 },

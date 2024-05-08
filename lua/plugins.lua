@@ -26,11 +26,14 @@ require('packer').startup(function()
       'hrsh7th/cmp-buffer' ,
       'hrsh7th/cmp-path',
       'onsails/lspkind.nvim',
+      'saadparwaiz1/cmp_luasnip',
       'L3MON4D3/LuaSnip'
     }
   }
-  use { 'hrsh7th/vim-vsnip' }
-  use { 'airblade/vim-gitgutter' }
+  use { 'L3MON4D3/LuaSnip', tag = 'v2.*', run = 'make install_jsregexp',
+    requires = { 'rafamadriz/friendly-snippets' }
+  }
+  use { 'airblade/vim-gitgutter', branch = 'main' }
   use { 'folke/tokyonight.nvim' }
   use { 'ahmedkhalf/project.nvim' }
   use { 'linty-org/key-menu.nvim' }
@@ -66,10 +69,12 @@ require('plugins/vim-gitgutter')
 require('plugins/nvim-lsp-signature')
 require('plugins/nvim-cmp')
 
+
 require('plugins/nvim-telescope')
 
 -- Initialize the following after the project local config was loaded
 vim.api.nvim_create_autocmd({"User"}, {pattern = {"ConfigFinished"}, callback = function(_)
+  require('plugins/luasnip')
   require('plugins/nvim-lspconfig').setup()
   pcall(function() vim.cmd[[e]] end)
 end})
